@@ -32,5 +32,11 @@ class Toolbar:
     def hover_cart(self):
         hover=ActionChains(self.driver).move_to_element(self.cart_icon())
         hover.perform()
+    def total_quantity_text(self):
+        return self.driver.find_element(By.CSS_SELECTOR,"span>label.roboto-regular").text
+
+
+    
+
 
 

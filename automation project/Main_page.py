@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from random import choice
+
 class Main_page:
     def __init__(self,driver:webdriver.Chrome):
         self.driver=driver
@@ -30,6 +31,8 @@ class Main_page:
         self.headphones_element().click()
     def open_speakers(self):
         self.speakers_element().click()
+    def name_mainpage(self):
+       return self.driver.find_element(By.CSS_SELECTOR,"[translate='SPACIAL_OFFER']")
 
 
 
