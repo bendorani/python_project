@@ -42,32 +42,44 @@ class Main_page:
         return False
 
     def login_from_icon(self,username,password):
-        wait=WebDriverWait(self.driver,20)
-        wait.until(Ec.visibility_of_element_located((By.ID,"menuUser")))
-        self.toolbar.user_icon().click()
-        wait.until(Ec.presence_of_element_located((By.NAME,"username")))
-        self.driver.find_element(By.NAME,"username").send_keys(username)
-        self.driver.find_element(By.NAME,"password").send_keys(password)
-        self.driver.find_element(By.ID,"sign_in_btnundefined").click()
+
+        while True:
+            try:
+                self.toolbar.user_icon().click()
+                self.driver.find_element(By.CSS_SELECTOR, "[name='username']").send_keys(username)
+                self.driver.find_element(By.CSS_SELECTOR, "[name='password']").send_keys(password)
+                self.driver.find_element(By.ID,"sign_in_btnundefined").click()
+                break
+            except:
+                pass
 
     def log_out(self):
-        wait=WebDriverWait(self.driver,20)
-        wait.until(Ec.element_to_be_clickable((By.ID,"menuUser")))
-        self.toolbar.user_icon().click()
-        wait.until(Ec.presence_of_element_located((By.CSS_SELECTOR,"[ng-click='signOut($event)']")))
+        while True:
+            try:
+                self.driver.find_element(By.ID,"menuUser").click()
+                break
+            except:
+                pass
         self.driver.find_element(By.CSS_SELECTOR,"[ng-click='signOut($event)']").click()
+
 
     def login_check_element(self):
         if self.driver.find_element(By.CSS_SELECTOR,"#menuUserLink>span").text!="":
             return True
         return False
     def create_user_button(self):
-        wait = WebDriverWait(self.driver, 40)
-        wait.until(Ec.element_to_be_clickable((By.LINK_TEXT,"CREATE NEW ACCOUNT")))
-        self.driver.find_element(By.LINK_TEXT,"CREATE NEW ACCOUNT").click()
+        while True:
+            try:
+                self.driver.find_element(By.CSS_SELECTOR, "[data-ng-click='createNewAccount()']").click()
+                break
+            except:
+                pass
         if self.driver.find_element(By.CSS_SELECTOR,".invalid"):
-            wait.until(Ec.element_to_be_clickable((By.LINK_TEXT, "CREATE NEW ACCOUNT")))
-            self.driver.find_element(By.LINK_TEXT, "CREATE NEW ACCOUNT").click()
+            self.driver.find_element(By.CSS_SELECTOR, "[data-ng-click='createNewAccount()']").click()
+
+
+
+
 
 
 

@@ -22,12 +22,16 @@ class Account_page:
         self.driver.find_element(By.NAME, "passwordRegisterPage").send_keys(password)
         self.driver.find_element(By.NAME, "confirm_passwordRegisterPage").send_keys(password)
     def register(self):
-        wait=WebDriverWait(self.driver,30)
-        wait.until(Ec.presence_of_element_located((By.NAME,"i_agree")))
-        self.driver.find_element(By.NAME,"i_agree").click()
-        self.driver.find_element(By.ID,"register_btnundefined").click()
+        while True:
+            try:
+                self.driver.find_element(By.NAME,"i_agree").click()
+                self.driver.find_element(By.ID,"register_btnundefined").click()
+                break
+            except:
+                pass
     def next_order_payment(self):
         self.driver.find_element(By.ID,"next_btn").click()
+
     def safepay_method(self):
         self.driver.find_element(By.NAME,"safepay").click()
     def safepay_username(self,username:str):
@@ -40,7 +44,6 @@ class Account_page:
         self.driver.find_element(By.ID,"pay_now_btn_ManualPayment").click()
 
     def safepay_pay(self,username,password):
-        self.next_order_payment()
         self.safepay_method()
         self.safepay_username(username)
         self.safepay_password(password)
@@ -64,7 +67,7 @@ class Account_page:
         names=self.driver.find_elements(By.CSS_SELECTOR,"table>tbody>tr>td>span.ng-binding")
         for i in names:
             list_names.append(i.text.upper())
-        return list_names
+        return list_names[::-1]
 
     def order_succseed(self):
         wait=WebDriverWait(self.driver,10)
