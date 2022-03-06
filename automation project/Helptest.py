@@ -33,10 +33,10 @@ class Helptest:
         self.toolbar.hover_cart()
 
     def list_price(self):
-        return self.list_price1
+        return self.list_price1[::-1]
     def list_quantity(self):
-        return self.list_quantity1
+        return self.list_quantity1[::-1]
     def list_name(self):
-        return self.list_name1
+        return self.list_name1[::-1]
     def list_color(self):
-        return self.list_color1
+        return self.list_color1[::-1]

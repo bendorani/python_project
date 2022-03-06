@@ -17,9 +17,9 @@ class TestWebsite(TestCase):
     def setUp(self):
         service_chrome = Service(r"C:\selenium\chromedriver.exe")
         self.driver = webdriver.Chrome(service=service_chrome)
-        self.driver.get("https://www.advantageonlineshopping.com/#/")
+        self.driver.get("http://www.advantageonlineshopping.com/#/")
         self.driver.maximize_window()
-        self.driver.implicitly_wait(20)
+        self.driver.implicitly_wait(40)
         self.main_page=Main_page(self.driver)
         self.toolbar=Toolbar(self.driver)
         self.cart_page=Cart_page(self.driver)
@@ -33,7 +33,7 @@ class TestWebsite(TestCase):
 
     def test_number1(self):
         self.help_Test.order_num_products(2)
-        sleep(2)
+
         sum1=0
         for i in self.help_Test.list_quantity1:
             sum1+=i
@@ -42,26 +42,27 @@ class TestWebsite(TestCase):
 
     def test_number2(self):
         self.help_Test.order_num_products(3)
+        print(self.help_Test.list_price1)
+        print(self.help_Test.list_name1)
+        print(self.help_Test.list_quantity1)
+        print(self.help_Test.list_color1)
         for i in range(3):
-            print(self.help_Test.list_price1)
-            print(self.help_Test.list_name1)
-            print(self.help_Test.list_quantity1)
-            print(self.help_Test.list_color1)
-            self.assertEqual(self.cart_page.cart_window_productscolor()[i].text, self.help_Test.list_color()[len(self.help_Test.list_price()) - 1 - i])
-            self.assertEqual(self.cart_page.cart_window_productquantity()[i].text, 'QTY: ' + str(self.help_Test.list_quantity()[len(self.help_Test.list_quantity()) - 1 - i]))
-            self.assertEqual(self.cart_page.cart_window_productprice()[i].text.replace(',', ''), '$' + str(self.help_Test.list_quantity()[len(self.help_Test.list_quantity()) - 1 - i] * self.help_Test.list_quantity()[len(self.help_Test.list_quantity()) - 1 - i]))
+            self.assertEqual(self.cart_page.cart_window_productscolor()[i].text, self.help_Test.list_color()[i])
+            self.assertEqual(self.cart_page.cart_window_productquantity()[i], str(self.help_Test.list_quantity()[i]))
+            self.assertEqual(float(self.cart_page.cart_window_productprice()[i]) ,float(self.help_Test.list_price()[i] * self.help_Test.list_quantity()[i]))
+            # self.assertEqual(self.cart_page.cart_window_productnames()[i].text,self.help_Test.list_name()[i])
 
 
     def test_number3(self):
         self.help_Test.order_num_products(2)
         self.cart_page.remove_product()
+        self.cart_page.cart_window_productnames()
         self.assertEqual(len(self.cart_page.cart_window_productnames()),1)
+        self.assertNotIn(self.help_Test.list_name(),self.cart_page.cart_window_productnames())
 
     def test_number4(self):
         self.help_Test.order_num_products(2)
         self.toolbar.open_cart_page()
-        wait=WebDriverWait(self.driver,10)
-        wait.until(Ec.text_to_be_present_in_element((By.CSS_SELECTOR,"a.select"),"SHOPPING CART"))
         self.assertEqual(self.cart_page.Shopping_cart_name().text,"SHOPPING CART")
 
     def test_number5(self):
@@ -75,28 +76,12 @@ class TestWebsite(TestCase):
         self.assertEqual(self.cart_page.cart_total_in_window(),self.cart_page.cart_total_table())
 
     def test_number6(self):
-        self.main_page.open_tablets()
-        self.category_page.open_product_1()
-        self.product_page.add_quantity()
-        self.product_page.add_to_cart()
-        self.toolbar.go_home()
-        self.main_page.open_speakers()
-        self.category_page.open_product2()
-        self.product_page.add_to_cart()
+        self.help_Test.order_num_products(2)
         self.toolbar.open_cart_page()
-        list1=self.cart_page.quantity_in_table()
-        self.toolbar.go_home()
-        self.main_page.open_laptops()
-        self.category_page.open_product_1()
-        self.product_page.add_quantity()
-        self.product_page.add_to_cart()
-        self.toolbar.go_home()
-        self.main_page.open_speakers()
-        self.category_page.open_product2()
-        self.product_page.add_to_cart()
-        self.toolbar.open_cart_page()
-        self.assertNotEqual(list1,self.cart_page.quantity_in_table())
-        self.assertEqual(self.cart_page.quantity_in_table(),['2','4'])
+        self.cart_page.edit_products()
+        print(self.help_Test.list_quantity1)
+        self.assertNotEqual(self.cart_page.quantity_in_table(),self.help_Test.list_quantity1)
+        self.assertEqual(self.cart_page.quantity_in_table(),['3','4'])
 
     def test_number7(self):
         self.main_page.open_tablets()
@@ -104,19 +89,52 @@ class TestWebsite(TestCase):
         self.driver.back()
         self.assertEqual(self.category_page.name_of_category(),"TABLETS")
         self.driver.back()
-        self.assertTrue(Ec.presence_of_element_located((By.CSS_SELECTOR,".categoryCell")))
+        sleep(2)
+        self.assertTrue(self.main_page.name_mainpage()==True)
 
     def test_number8(self):
         self.help_Test.order_num_products(2)
         self.cart_page.Checkout()
-        self.account_page.crateuser("Bend222","Ben12@gmail.com","Ben1234")
+        self.account_page.registration_button()
+        self.account_page.createuser("Bend10002","Ben12@gmail.com","Ben123")
         self.account_page.safepay_pay("Aviel122","Avi123")
         self.assertTrue(self.account_page.order_succseed()==True)
         self.toolbar.hover_cart()
         self.assertTrue(self.cart_page.empty_cart_window()==True)
+        self.toolbar.go_home()
         self.account_page.my_orders()
-        self.assertEqual(len(self.account_page.table_orders())-1,len(self.help_Test.list_quantity1))
-        self.account_page.delete_account()
+        self.assertEqual(self.account_page.table_orders(),len(self.help_Test.list_quantity1))
+        self.assertEqual(self.account_page.name_of_products_in_order(),self.help_Test.list_name())
+    def test_number9(self):
+        self.help_Test.order_num_products(2)
+        self.cart_page.Checkout()
+        self.account_page.login_after_checkout("Bend10002","Ben123")
+        self.account_page.credit_card_pay(123456789123,234,"Bend","03","2027")
+        self.assertTrue(self.account_page.order_succseed()==True)
+        self.toolbar.hover_cart()
+        self.assertTrue(self.cart_page.empty_cart_window()==True)
+        self.toolbar.go_home()
+        self.account_page.my_orders()
+        print(self.account_page.table_orders())
+        print(self.help_Test.list_quantity1)
+        self.assertEqual(self.account_page.table_orders(),len(self.help_Test.list_quantity1))
+
+    def test_number10(self):
+        self.toolbar.user_icon().click()
+        self.main_page.create_user_button()
+        self.account_page.createuser("Bend2005","Bendo10@gmail.com","Ben1234")
+        self.toolbar.go_home()
+        sleep(5)
+        self.main_page.log_out()
+        self.assertTrue(self.main_page.login_check_element()==False)
+        self.main_page.login_from_icon("Bend2005","Ben1234")
+        sleep(2)
+        self.assertTrue(self.main_page.login_check_element() ==True)
+
+
+
+
+
 
 
 
